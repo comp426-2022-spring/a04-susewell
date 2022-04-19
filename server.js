@@ -36,7 +36,7 @@ app.get("/app/", (req, res, next) =>{
 });
 
 if (args.log == 'false') {
-    console.log("You are not creating file access.log")
+    console.log("not creating file access.log")
 } else {
     const accesslog = fs.createWriteStream('access.log', {flags: 'a'})
     app.use(morgan('combined', {stream: accessLog}))
