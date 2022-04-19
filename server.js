@@ -9,16 +9,8 @@ const fs = require('fs')
 
 const args = require('minimist')(process.argv.slice(2));
 
-
-
-app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-
-const logging = (req, res, next) => {
-    console.log(req.body.number)
-    next()
-}
-
+app.use(express.json())
 
 
 const port = args.port || args.p || 5000
@@ -26,7 +18,7 @@ const port = args.port || args.p || 5000
 
 
 const server = app.listen(port, () => {
-    console.log('App is running on a port %PORT%'.replace('%PORT%', port))
+    console.log('Server is running on a port %PORT%'.replace('%PORT%', port))
 })
 
 app.get("/app/", (req, res, next) =>{
@@ -43,15 +35,15 @@ if (args.log == 'false') {
 
 const help = (`
 server.js [options]
---port	Set the port number for the server to listen on. Must be an integer
+--port, -p	Set the port number for the server to listen on. Must be an integer
             between 1 and 65535.
---debug	If set to true, creates endlpoints /app/log/access/ which returns
+--debug, -d If set to true, creates endlpoints /app/log/access/ which returns
             a JSON access log from the database and /app/error which throws 
             an error with the message "Error test successful." Defaults to 
             false.
 --log		If set to false, no log files are written. Defaults to true.
             Logs are always written to database.
---help	Return this message and exit.
+--help, -h	Return this message and exit.
 `)
 if (args.help || args.h) {
     console.log(help)
@@ -160,7 +152,7 @@ app.get('/app/echo/', logging, (req, res) => {
     res.status(200).json({ 'message' : req.body.number })
 })
 
-app.get('/app/flip', (req, res) => {
+app.get('/app/flip/', (req, res) => {
     res.status(200).json({ 'flip' : coinFlip()})
 })
 
