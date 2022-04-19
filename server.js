@@ -7,10 +7,9 @@ const logdb = require('./database.js')
 const morgan = require('morgan')
 const fs = require('fs')
 
-const args = require ('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
-args['port'];
-const port_args = args.port;
+
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
@@ -22,7 +21,7 @@ const logging = (req, res, next) => {
 
 
 
-var port = args.port || args.p || 5000
+const port = args.port || args.p || 5000
 
 
 
@@ -147,11 +146,6 @@ app.use(fs.writeFile('./access.log', data,
         }
     }
 ))
-
-app.get('/app', (req, res) => {
-    res.status(200).end('API is working right')
-    res.type('text/plain')
-})
 
 
 app.get('/app/echo/:number', express.json(), (req, res) => {
