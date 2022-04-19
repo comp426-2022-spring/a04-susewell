@@ -5,7 +5,6 @@ const app = express()
 const logdb = require('./database')
 
 const morgan = require('morgan')
-const errorhandler = require('errorhandler')
 const fs = require('fs')
 
 const args = require ('minimist')(process.argv.slice(2));
