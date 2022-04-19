@@ -2,7 +2,7 @@
 const express = require('express')
 const app = express()
 
-const logdb = require('./database')
+const logdb = require('./database.js')
 
 const morgan = require('morgan')
 const fs = require('fs')
