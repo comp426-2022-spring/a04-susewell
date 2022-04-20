@@ -44,7 +44,7 @@ if (args.log == 'false') {
     console.log("NOTICE: not creating file access.log")
 } else {
     const accesslog = fs.createWriteStream('access.log', { flags: 'a' })
-    app.use(morgan('combined', {stream: accessLog}))
+    app.use(morgan('combined', {stream: accesslog}))
 }
 
 app.use((req, res, next) => {
