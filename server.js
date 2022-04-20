@@ -135,9 +135,7 @@ app.get('/app/echo/', (req, res) => {
     res.status(200).json({ 'message' : req.query.number })
 })
 
-app.get('/app/echo/', logging, (req, res) => {
-    res.status(200).json({ 'message' : req.body.number })
-})
+
 
 
 
