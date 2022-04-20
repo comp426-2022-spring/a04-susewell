@@ -13,10 +13,11 @@ if (row === undefined) {
             remoteuser TEXT, 
             time TEXT, 
             method TEXT, 
-            url TEXT, 
+            url TEXT,
+            protocol TEXT, 
             httpversion TEXT, 
             status TEXT, 
-            referer TEXT, 
+            referrer TEXT, 
             useragent TEXT)
     `
     logdb.exec(sqlInit)

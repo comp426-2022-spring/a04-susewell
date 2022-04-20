@@ -57,12 +57,12 @@ app.use((req, res, next) => {
         protocol: req.protocol,
         httpversion: req.httpVersion,
         status: res.statusCode,
-        referrer: req.headers['referer'],
+        referrer: req.headers['referrer'],
         useragent: req.headers['user-agent']
     }
     console.log(logdata)
-    const stmt = db.prepare('INSERT INTO access (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.httpversion, logdata.status, logdata.referrer, logdata.useragent)
+    const stmt = db.prepare('INSERT INTO access (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referrer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.protocol, logdata.httpversion, logdata.status, logdata.referrer, logdata.useragent)
     next();
 });
 
