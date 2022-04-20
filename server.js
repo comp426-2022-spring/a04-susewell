@@ -1,37 +1,4 @@
-// Require Express.js
-const express = require('express')
-const app = express()
-
-const logdb = require('./database.js')
-
-const morgan = require('morgan')
-const fs = require('fs')
-
 const args = require('minimist')(process.argv.slice(2));
-
-app.use(express.urlencoded({extended: true}))
-app.use(express.json())
-
-
-const port = args.port || args.p || 5000
-
-
-
-const server = app.listen(port, () => {
-    console.log('Server is running on a port %PORT%'.replace('%PORT%', port))
-})
-
-app.get("/app/", (req, res, next) =>{
-    res.json({"message" : "Your API works! (200)"});
-    res.status(200);
-});
-
-if (args.log == 'false') {
-    console.log("not creating file access.log")
-} else {
-    const accesslog = fs.createWriteStream('access.log', {flags: 'a'})
-    app.use(morgan('combined', {stream: accessLog}))
-}
 
 const help = (`
 server.js [options]
@@ -45,9 +12,39 @@ server.js [options]
             Logs are always written to database.
 --help, -h	Return this message and exit.
 `)
+
 if (args.help || args.h) {
     console.log(help)
     process.exit(0)
+}
+
+// Require Express.js
+var express = require('express')
+var app = express()
+
+const fs = require('fs')
+const morgan = require('morgan')
+
+const db = require('./database.js')
+
+
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
+
+
+const port = args.port || args.p || 5000
+
+
+
+const server = app.listen(port, () => {
+    console.log('Server is running on a port %PORT%'.replace('%PORT%', port))
+})
+
+if (args.log == 'false') {
+    console.log("NOTICE: not creating file access.log")
+} else {
+    const accesslog = fs.createWriteStream('access.log', { flags: 'a' })
+    app.use(morgan('combined', {stream: accessLog}))
 }
 
 app.use((req, res, next) => {
@@ -60,24 +57,15 @@ app.use((req, res, next) => {
         protocol: req.protocol,
         httpversion: req.httpVersion,
         status: res.statusCode,
-        referer: req.headers['referer'],
+        referrer: req.headers['referer'],
         useragent: req.headers['user-agent']
     }
     console.log(logdata)
     const stmt = db.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.httpversion, logdata.status, logdata.referer, logdata.useragent)
+    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.httpversion, logdata.status, logdata.referrer, logdata.useragent)
     next();
 });
 
-if (args.debug || args.d) {
-    app.get('/app/log/access/', (req, res, next) => {
-        const stmt = db.prepare('SELECT * FROM accesslog').all()
-        res.status(200).json (stmt)
-    })
-    app.get ('/app/error/', (req, res, next) => {
-        throw new Error('Error')
-    })
-}
 function coinFlip() {
     let flip =  Math.random();
     if (flip < 0.5){
@@ -86,6 +74,33 @@ function coinFlip() {
         return 'tails'
     }
 }
+
+app.get("/app/", (req, res, next) =>{
+    res.json({"message" : "Your API works! (200)"});
+    res.status(200);
+});
+
+app.get('/app/flip/', (req, res) => {
+    res.status(200).json({ 'flip' : coinFlip()})
+})
+
+
+
+
+
+
+
+
+if (args.debug || args.d) {
+    app.get('/app/log/access/', (req, res, next) => {
+        const stmt = db.prepare('SELECT * FROM accesslog').all();
+        res.status(200).json(stmt);
+    })
+    app.get ('/app/error/', (req, res, next) => {
+        throw new Error('Error')
+    })
+}
+
 
 function coinFlips(flips) {
 
@@ -152,9 +167,7 @@ app.get('/app/echo/', logging, (req, res) => {
     res.status(200).json({ 'message' : req.body.number })
 })
 
-app.get('/app/flip/', (req, res) => {
-    res.status(200).json({ 'flip' : coinFlip()})
-})
+
 
 app.get('/app/flips/:number', (req, res) => {
     let flips = coinFlips(req.params.number)
