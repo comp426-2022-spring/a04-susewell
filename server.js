@@ -74,34 +74,6 @@ function coinFlip() {
         return 'tails'
     }
 }
-
-app.get("/app/", (req, res, next) =>{
-    res.json({"message" : "Your API works! (200)"});
-    res.status(200);
-});
-
-app.get('/app/flip/', (req, res) => {
-    res.status(200).json({ 'flip' : coinFlip()})
-})
-
-
-
-
-
-
-
-
-if (args.debug || args.d) {
-    app.get('/app/log/access/', (req, res, next) => {
-        const stmt = db.prepare('SELECT * FROM accesslog').all();
-        res.status(200).json(stmt);
-    })
-    app.get ('/app/error/', (req, res, next) => {
-        throw new Error('Error')
-    })
-}
-
-
 function coinFlips(flips) {
 
     let result = [];
@@ -143,16 +115,16 @@ function countFlips(array) {
       return {call: call, flip: flip, result: 'win'}
     }
   }
-// Use Morgan for logging
-app.use(fs.writeFile('./access.log', data, 
-    {flag: 'a'}, (err, req, res, next) => {
-        if (err) {
-            console.error(err)
-        } else {
-            console.log()
-        }
-    }
-))
+
+app.get("/app/", (req, res, next) =>{
+    res.json({"message" : "Your API works! (200)"});
+    res.status(200);
+});
+
+app.get('/app/flip/', (req, res) => {
+    res.status(200).json({ 'flip' : coinFlip()})
+})
+
 
 
 app.get('/app/echo/:number', express.json(), (req, res) => {
@@ -184,6 +156,20 @@ app.get('/app/flip/call/tails', (req, res) => {
     let tails = flipACoin('tails')
     res.status(200).json(tails)
 })
+
+
+
+
+
+if (args.debug || args.d) {
+    app.get('/app/log/access/', (req, res, next) => {
+        const stmt = db.prepare('SELECT * FROM accesslog').all();
+        res.status(200).json(stmt);
+    })
+    app.get ('/app/error/', (req, res, next) => {
+        throw new Error('Error')
+    })
+}
 
 app.use(function(req, res) {
     res.status(404).send("404 NOT FOUND")
