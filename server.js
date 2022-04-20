@@ -61,7 +61,7 @@ app.use((req, res, next) => {
         useragent: req.headers['user-agent']
     }
     console.log(logdata)
-    const stmt = db.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    const stmt = db.prepare('INSERT INTO access (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
     const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.httpversion, logdata.status, logdata.referrer, logdata.useragent)
     next();
 });
@@ -163,7 +163,7 @@ app.get('/app/flip/call/tails', (req, res) => {
 
 if (args.debug || args.d) {
     app.get('/app/log/access/', (req, res, next) => {
-        const stmt = db.prepare('SELECT * FROM accesslog').all();
+        const stmt = db.prepare('SELECT * FROM access').all();
         res.status(200).json(stmt);
     })
     app.get ('/app/error/', (req, res, next) => {
